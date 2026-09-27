@@ -1,6 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import Artalk from '../components/Artalk.astro';
+import Disqus from '../components/Disqus.astro';
 import ArticleActions from '../components/posts/ArticleActions.astro';
 
 interface Props {
@@ -42,7 +42,7 @@ const fmt = (d: Date) =>
 
     <section id="comments" aria-label="Comments" class="scroll-mt-20">
       <hr class="my-10 border-neutral-200 dark:border-neutral-800" />
-      <Artalk />
+      <Disqus />
     </section>
   </div>
 </BaseLayout>

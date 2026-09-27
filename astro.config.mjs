@@ -11,6 +11,9 @@ export default defineConfig({
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
+    // Lets `bun run dev` be opened as e.g. http://local.iroel.xyz:4321 (hosts entry -> 127.0.0.1),
+    // since Disqus refuses `localhost` as a trusted domain but accepts subdomains of iroel.xyz.
+    server: { allowedHosts: ['.iroel.xyz', '.localtest.me'] },
   },
   markdown: {
     processor: satteri({ hastPlugins: [headingAnchors] }),

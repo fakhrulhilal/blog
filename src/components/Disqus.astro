@@ -1,0 +1,46 @@
+---
+import { siteConfig } from '../site.config';
+
+const { shortname } = siteConfig.disqus;
+const configured = Boolean(shortname);
+const pageUrl = new URL(Astro.url.pathname, siteConfig.url).href;
+---
+
+<!-- The explicit hex text/background colors (same values as neutral-900/100 and white/neutral-950) are deliberate:
+     Disqus's embed.js reads the computed colors to pick light/dark, and throws on Tailwind 4's `oklch(... none)`
+     neutrals, so the embed never renders. Keep them in sync with the body colors in theme.css. -->
+{configured ? (
+  <>
+    <div id="disqus_thread" class="bg-[#ffffff] text-[#171717] dark:bg-[#0a0a0a] dark:text-[#f5f5f5]" data-shortname={shortname} data-url={pageUrl} data-identifier={Astro.url.pathname}></div>
+    <script>
+      type Disqus = { reset: (opts: { reload: boolean; config: () => void }) => void };
+
+      const el = document.getElementById('disqus_thread');
+      if (el) {
+        const { shortname, url, identifier } = el.dataset;
+        const config = function (this: { page: { url?: string; identifier?: string } }) {
+          this.page.url = url;
+          this.page.identifier = identifier;
+        };
+        (window as unknown as { disqus_config: typeof config }).disqus_config = config;
+
+        const script = document.createElement('script');
+        script.src = `https://${shortname}.disqus.com/embed.js`;
+        script.async = true;
+        script.dataset.timestamp = String(Date.now());
+        document.body.appendChild(script);
+
+        // Disqus picks its light/dark styling from <html>'s color-scheme at load, so reload it on theme change.
+        window.addEventListener('themechange', () => {
+          const disqus = (window as unknown as { DISQUS?: Disqus }).DISQUS;
+          disqus?.reset({ reload: true, config });
+        });
+      }
+    </script>
+  </>
+) : (
+  <p class="text-sm text-neutral-500">
+    Comments aren't wired up yet — set <code>disqus.shortname</code> in{' '}
+    <code>src/site.config.ts</code> to your Disqus shortname.
+  </p>
+)}
