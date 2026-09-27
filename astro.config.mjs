@@ -7,7 +7,7 @@ import { codeBlockFrame } from './src/plugins/code-block';
 
 // Update `site` if you change the domain.
 export default defineConfig({
-  site: 'https://blog.iroel.xyz',
+  site: 'https://iroel.xyz',
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
