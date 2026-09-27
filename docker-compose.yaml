@@ -1,0 +1,135 @@
+# One compose file for local dev AND the production VM.
+#
+#   Blog-only local preview (no Neon/Caddy needed):
+#     docker compose --profile local up blog
+#
+#   Full local stack (blog + Artalk + Caddy, comment.localhost/blog.localhost):
+#     docker compose --profile local up -d
+#
+#   Production (Artalk + Caddy only — blog itself is static, via GitHub Pages):
+#     docker compose up -d
+#
+# `blog` only starts with --profile local; `artalk`/`caddy` have no profile
+# so they're always included. Caddy fronts Artalk with automatic HTTPS in
+# both the local and production case — set DOMAIN in .env to
+# `comment.localhost` (Caddy self-signs, no LE calls) or `discuss.iroel.xyz`
+# (real Let's Encrypt, auto-renewed ~7 days before expiry — see
+# deploy/Caddyfile's renewal_window_ratio). No cron/init script needed.
+#
+# For blog.localhost + your own CA instead of Caddy's internal one, add
+# compose.local.yaml (see deploy/ca/generate-cert.sh first):
+#   docker compose --profile local -f compose.yaml -f compose.local.yaml --env-file .env up -d
+name: blog
+
+services:
+  blog:
+    image: oven/bun:1
+    container_name: blog.web
+    working_dir: /app
+    command: sh -c "bun install && bun --bun run dev"
+    profiles: ["local"]
+    labels:
+      dev.orbstack.domains: blog.${DOMAIN}
+      dev.orbstack.http-port: 4321
+      dev.orbstack.icon: https://astro.build/favicon.svg      
+    volumes:
+      - .:/app
+      - blog_node_modules:/app/node_modules
+    environment:
+      # astro's file watcher needs polling on some Docker Desktop setups (macOS/Windows)
+      - CHOKIDAR_USEPOLLING=true
+      - ASTRO_TELEMETRY_DISABLED=1
+    networks:
+      - backend
+
+  db:
+    image: postgres
+    container_name: blog.db
+    restart: unless-stopped
+    shm_size: 1gb
+    labels:
+      dev.orbstack.domains: db.${DOMAIN}
+      dev.orbstack.icon: https://www.postgresql.org/media/img/about/press/elephant.png
+    healthcheck:
+      test: pg_isready -h localhost -p 5432
+      interval: 10s
+      timeout: 3s
+      retries: 2
+    profiles: ["local"]
+    environment:
+      - TZ=${TZ}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=${APP_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  comment:
+    image: artalk/artalk-go:latest
+    container_name: blog.comment
+    restart: unless-stopped
+    labels:
+      dev.orbstack.domains: comment.${DOMAIN}
+      dev.orbstack.http-port: 6000
+      dev.orbstack.icon: https://artalk.js.org/favicon.png
+    volumes:
+      - artalk_data:/data
+    environment:
+      - ATK_PORT=6000
+      - ATK_SITE_DEFAULT="Fakhrulhilal's Blog"
+      - ATK_SITE_URL="https://blog.${DOMAIN}"
+      - ATK_TRUSTED_DOMAINS="https://blog.${DOMAIN} http://blog"
+      - ATK_DB_TYPE=psql
+      - ATK_DB_HOST=${POSTGRE_HOST:-blog.postgre}
+      - ATK_DB_PORT=${POSTGRE_PORT:-5432}
+      - ATK_DB_NAME=${POSTGRE_NAMESPACE:-artalk}
+      - ATK_DB_USER=${POSTGRE_USERNAME:-postgres}
+      - ATK_DB_PASSWORD=${POSTGRE_PASSWORD:-$APP_PASSWORD}
+      - ATK_DB_SSL=${POSTGRE_SECURE:-false}
+      - ATK_AUTH_GOOGLE_CLIENT_ID=${OIDC_GOOGLE_KEY:-}
+      - ATK_AUTH_GOOGLE_CLIENT_SECRET=${OIDC_GOOGLE_SECRET:-}
+      - ATK_AUTH_GITHUB_CLIENT_ID=${OIDC_GITHUB_ID:-}
+      - ATK_AUTH_GITHUB_CLIENT_SECRET=${OIDC_GITHUB_SECRET:-}
+      - ATK_AUTH_MICROSOFT_CLIENT_ID=${OIDC_MICROSOFT_ID:-}
+      - ATK_AUTH_MICROSOFT_CLIENT_SECRET=${OIDC_MICROSOFT_SECRET:-}
+      - ATK_AUTH_FACEBOOK_CLIENT_ID=${OIDC_FACEBOOK_ID:-}
+      - ATK_AUTH_FACEBOOK_CLIENT_SECRET=${OIDC_FACEBOOK_SECRET:-}
+      - ATK_AUTH_TWITTER_CLIENT_ID=${OIDC_TWITTER_CLIENT_ID:-}
+      - ATK_AUTH_TWITTER_CLIENT_SECRET=${OIDC_TWITTER_CLIENT_SECRET:-}
+      - ATK_ADMIN_USERS_0_NAME=${USER_NAME}
+      - ATK_ADMIN_USERS_0_EMAIL=${USER_EMAIL}
+    networks:
+      - backend
+
+  proxy:
+    image: caddy:2-alpine
+    container_name: blog.proxy
+    restart: unless-stopped
+    depends_on:
+      - comment
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    environment:
+      - DOMAIN="blog.${DOMAIN}"
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-$USER_EMAIL}
+      - ACME_CA=${ACME_CA:-}
+      - RENEWAL_WINDOW_RATIO=${RENEWAL_WINDOW_RATIO:-0.078}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  blog_node_modules:
+  artalk_data:
+  caddy_data:
+  caddy_config:
+  postgres_data:

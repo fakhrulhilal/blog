@@ -1,0 +1,23 @@
+# Local-only Caddyfile: comment.localhost + blog.localhost, both served with
+# a certificate from your own personal CA (see ca/generate-cert.sh) instead
+# of Caddy's built-in internal CA. Trust that one root CA once per machine
+# and you never need to re-trust a fresh Caddy-generated one again, no
+# matter how many times the caddy_data volume gets recreated or you move to
+# a different machine.
+#
+# Used only via: docker compose -f compose.yaml -f compose.local.yaml up
+# (run from the repo root — that override swaps this in for the production
+# Caddyfile).
+{
+	auto_https off
+}
+
+comment.localhost {
+	tls /ca/local.fullchain.crt /ca/local.key
+	reverse_proxy artalk:23366
+}
+
+blog.localhost {
+	tls /ca/local.fullchain.crt /ca/local.key
+	reverse_proxy blog:4321
+}

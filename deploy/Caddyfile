@@ -1,0 +1,26 @@
+# Production Caddyfile (also the default for a plain `docker compose up`
+# with no override). Automatic HTTPS:
+#
+#   - DOMAIN=comment.localhost -> Caddy's own internal CA, self-signed, no
+#                                 network calls to Let's Encrypt at all.
+#   - DOMAIN=discuss.iroel.xyz -> Caddy requests/renews a real cert from
+#                                 Let's Encrypt (or ACME_CA, if set to staging).
+#
+# Certs are cached in the caddy_data volume; Caddy only (re)requests one
+# when missing or inside the renewal window below — never on every start.
+#
+# For local testing with your own CA + blog.localhost instead, see
+# ../compose.local.yaml and Caddyfile.local — that setup replaces this file
+# entirely, it doesn't layer on top of it.
+
+{
+	email {$LETSENCRYPT_EMAIL}
+	acme_ca {$ACME_CA:https://acme-v02.api.letsencrypt.org/directory}
+	# Fraction of a cert's lifetime that must remain before Caddy renews it.
+	# Let's Encrypt certs are 90 days, so 0.078 * 90 ~= 7 days.
+	renewal_window_ratio {$RENEWAL_WINDOW_RATIO:0.078}
+}
+
+{$DOMAIN} {
+	reverse_proxy artalk:23366
+}

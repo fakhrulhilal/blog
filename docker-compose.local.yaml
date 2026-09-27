@@ -1,0 +1,15 @@
+# Optional local override: comment.localhost + blog.localhost served from
+# your own CA instead of Caddy's automatic HTTPS. Not used in production.
+#
+# One-time setup: deploy/ca/generate-cert.sh
+# Usage: docker compose --profile local -f compose.yaml -f compose.local.yaml --env-file .env up -d
+#
+# blog/artalk/caddy already share one network since they're all in
+# compose.yaml, so — unlike when Caddy lived in a separate deploy/
+# compose file — no extra network wiring is needed here.
+
+services:
+  proxy:
+    volumes:
+      - ./deploy/Caddyfile.local:/etc/caddy/Caddyfile:ro
+      - ./deploy/ca:/ca:ro
