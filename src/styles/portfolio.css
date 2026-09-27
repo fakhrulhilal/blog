@@ -1,0 +1,13 @@
+/* Portfolio (home page) stylesheet — modelled on the astro-me theme, kept separate from the blog's global.css. */
+@import 'tailwindcss';
+@import './theme.css';
+
+body {
+  @apply font-code;
+}
+
+@media print {
+  body {
+    @apply bg-white text-black;
+  }
+}

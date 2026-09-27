@@ -1,0 +1,13 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { profile } from '../../data/profile';
+---
+
+<SectionHeading>Main tools</SectionHeading>
+<ul class="mt-2 print:inline-flex">
+  {profile.tools.map((tool) => (
+    <li class="mr-1 mb-1 inline-block md:mr-0 md:block print:mr-0">
+      <span class="inline-block px-3 py-1 text-xl font-light md:text-2xl">{tool}</span>
+    </li>
+  ))}
+</ul>

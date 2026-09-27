@@ -1,0 +1,14 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { profile } from '../../data/profile';
+
+// Blank lines separate paragraphs; single newlines are just source wrapping.
+const paragraphs = profile.about.split(/\n\s*\n/).map((p) => p.replace(/\s*\n\s*/g, ' '));
+---
+
+<div class="pb-12">
+  <SectionHeading>About</SectionHeading>
+  <div class="space-y-3 text-sm leading-normal text-neutral-900 dark:text-neutral-200">
+    {paragraphs.map((p) => <p>{p}</p>)}
+  </div>
+</div>

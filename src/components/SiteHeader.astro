@@ -1,0 +1,81 @@
+---
+import SocialIcon from './SocialIcon.astro';
+import ThemeSwitcher from './ThemeSwitcher.astro';
+import { contact, profile, social } from '../data/profile';
+
+interface Props {
+  /** Pin the header to the top while scrolling (blog posts): a compact 64px bar, the common height
+   *  on sites like GitHub and Microsoft Learn, with a full-width translucent background. */
+  sticky?: boolean;
+}
+
+const { sticky = false } = Astro.props;
+
+const github = social.find((s) => s.name === 'github');
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/', label: 'About', active: path === '/' },
+  { href: '/posts/', label: 'Blog', active: path.startsWith('/posts') },
+];
+---
+
+<header
+  class:list={[
+    'w-full font-code print:hidden',
+    sticky
+      ? 'sticky top-0 z-20 border-b border-neutral-200 bg-white/85 backdrop-blur dark:border-neutral-800 dark:bg-neutral-950/85'
+      : 'mx-auto mt-6 max-w-4xl px-4',
+  ]}
+>
+  <div
+    class:list={[
+      'flex items-center gap-4',
+      sticky ? 'mx-auto h-16 max-w-4xl px-4' : 'border-b border-neutral-200 py-3 dark:border-neutral-800',
+    ]}
+  >
+    <a
+      href="/"
+      aria-label={profile.name}
+      title={profile.name}
+      class:list={[
+        'inline-flex shrink-0 items-center justify-center rounded-full border-2 border-primary-light font-bold text-accent no-underline dark:border-primary',
+        sticky ? 'h-10 w-10 text-base' : 'h-14 w-14 text-xl',
+      ]}
+    >
+      {profile.initials}
+    </a>
+    <nav class="ml-auto flex items-center gap-3 text-sm sm:gap-4">
+      {nav.map(({ href, label, active }) => (
+        <a
+          href={href}
+          aria-current={active ? 'page' : undefined}
+          class:list={[
+            'hover:text-accent',
+            active
+              ? 'font-semibold text-primary-dark underline decoration-accent decoration-2 underline-offset-8 dark:text-neutral-100'
+              : 'text-neutral-500 no-underline dark:text-neutral-400',
+          ]}
+        >
+          {label}
+        </a>
+      ))}
+      {github && (
+        <a href={github.url} title={github.label} aria-label={github.label} class="p-1 text-neutral-400 hover:text-accent">
+          <SocialIcon name="github" class="h-6 w-6" />
+        </a>
+      )}
+      <a
+        href={contact.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={`${contact.label} ${contact.handle}`}
+        aria-label={`Contact me on ${contact.label} (${contact.handle})`}
+        class="flex items-center gap-2 rounded-md p-1 text-neutral-400 no-underline hover:text-accent lg:bg-primary lg:px-3 lg:text-white lg:hover:bg-accent lg:hover:text-white lg:dark:bg-primary-light lg:dark:text-primary-dark lg:dark:hover:bg-accent lg:dark:hover:text-neutral-950"
+      >
+        <SocialIcon name="telegram" class="h-5 w-5" />
+        <span class="hidden lg:inline">Contact me</span>
+      </a>
+      <ThemeSwitcher />
+    </nav>
+  </div>
+</header>

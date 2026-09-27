@@ -1,0 +1,21 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { profile } from '../../data/profile';
+---
+
+<div class="flex pb-8 print:py-2">
+  <div class="w-1/2 border-r border-neutral-200 pr-4 lg:pr-12 print:border-none dark:border-neutral-800">
+    <SectionHeading>Focused on</SectionHeading>
+    <h3 class="text-2xl leading-tight font-light print:text-base">{profile.focus}</h3>
+    {profile.forHire && (
+      <div class="pt-2 text-xs font-semibold uppercase print:hidden">
+        <span class="mr-1 inline-block h-2 w-2 rounded-full bg-green-500"></span>
+        <span class="text-neutral-700 dark:text-neutral-300">Available for hire</span>
+      </div>
+    )}
+  </div>
+  <div class="w-1/2 pl-4 lg:pl-12 print:text-right">
+    <SectionHeading>Working with</SectionHeading>
+    <h3 class="text-2xl leading-tight font-light print:text-base">{profile.stack}</h3>
+  </div>
+</div>

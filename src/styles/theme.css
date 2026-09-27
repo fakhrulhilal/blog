@@ -1,0 +1,42 @@
+/* Shared by global.css (blog) and portfolio.css (home). Import after 'tailwindcss'. */
+
+/* Dark mode is class-based so the header switch can override the OS (auto / light / dark).
+   The `.dark` class is set on <html> by the inline script in BaseHead.astro before first paint. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-code: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Code blocks and inline code use the same face as the body (Tailwind's font-mono / prose code). */
+  --font-mono: var(--font-code);
+
+  /* astro-me's primary / primaryLight / primaryDark, remapped to neutral so the site stays white.
+     Swap these three for a hue (e.g. var(--color-indigo-600)) to get an astro-me colour theme back. */
+  --color-primary: var(--color-neutral-600);
+  --color-primary-light: var(--color-neutral-200);
+  --color-primary-dark: var(--color-neutral-900);
+
+  /* Brand accent: Astro Cactus's dark-mode green. Light mode uses a deeper shade of the same hue so
+     text in it stays readable on white (5.1:1); the .dark override below restores Cactus's mint (7.2:1). */
+  --color-accent: oklch(52% 0.12 163.7);
+}
+
+.dark {
+  --color-accent: oklch(70.91% 0.1415 163.7);
+}
+
+::selection {
+  background-color: color-mix(in oklch, var(--color-accent) 30%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100;
+}

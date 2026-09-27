@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+<mask id="pulse-cut" maskUnits="userSpaceOnUse">
+  <rect width="128" height="128" fill="#fff"/>
+  <polyline points="14,58 44,58 52,40 60,86 70,14 80,58 114,58" fill="none" stroke="#000" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</mask>
+<path
+  d="M64,112 C10,74 4,40 34,22 C50,12 64,26 64,34 C64,26 78,12 94,22 C124,40 118,74 64,112 Z"
+  fill="#e11d48"
+  mask="url(#pulse-cut)"
+/>
+</svg>

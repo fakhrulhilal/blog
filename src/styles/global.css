@@ -1,0 +1,71 @@
+/* Blog stylesheet. The portfolio home page uses portfolio.css instead. */
+@import 'tailwindcss';
+@import './theme.css';
+@plugin '@tailwindcss/typography';
+
+/* Shiki renders both themes as CSS variables; switch to the dark one when <html> has .dark. */
+.dark .astro-code,
+.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* ---- Post body: heading permalinks (Microsoft Learn style) ---- */
+.heading-anchored {
+  @apply relative;
+  /* Clears the 64px sticky header on post pages, plus some breathing room. */
+  scroll-margin-top: 5rem;
+}
+/* Small screens: inline after the heading text (there's no gutter to float into). */
+.heading-anchor {
+  @apply ml-2 inline-flex align-middle text-neutral-400 no-underline opacity-0 transition-opacity hover:text-accent focus-visible:opacity-100;
+}
+/* md and up: float in the gutter left of the heading, between the action rail and the article. */
+@media (width >= 48rem) {
+  .heading-anchor {
+    @apply absolute top-1/2 right-full mr-2 ml-0 -translate-y-1/2 text-accent;
+  }
+}
+.heading-anchored:hover .heading-anchor,
+.heading-anchored:target .heading-anchor {
+  @apply opacity-100;
+}
+@media (hover: none) {
+  .heading-anchor {
+    @apply opacity-100;
+  }
+}
+
+/* Typography's prose-sm shrinks every <code> (inline and inside <pre>) to 0.857em, which only makes
+   sense next to a proportional body font. Keep code at the size of its surroundings. */
+.prose code {
+  font-size: 1em;
+}
+
+/* ---- Post body: code blocks — page background, hairline border, language + copy header ---- */
+.code-block {
+  @apply my-6 overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800;
+}
+.code-block-header {
+  @apply flex items-center justify-between border-b border-neutral-200 px-4 py-1.5 text-xs text-neutral-500 dark:border-neutral-800 dark:text-neutral-400;
+}
+.code-copy {
+  @apply inline-flex cursor-pointer items-center gap-1.5 rounded px-1.5 py-0.5 hover:bg-neutral-100 hover:text-accent dark:hover:bg-neutral-800;
+}
+.code-copy.copied {
+  @apply text-accent;
+}
+.code-block .astro-code {
+  @apply m-0 rounded-none;
+  /* Same size as the body text: the body is monospace too, so there's no reason to shrink code. */
+  font-size: inherit;
+  line-height: 1.65;
+  background-color: transparent !important;
+}
+.dark .code-block .astro-code,
+.dark .code-block .astro-code span {
+  background-color: transparent !important;
+}

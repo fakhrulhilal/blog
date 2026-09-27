@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  posts: CollectionEntry<'posts'>[];
+  /** Tag to highlight, e.g. on its own tag page. */
+  current?: string;
+}
+
+const { posts, current } = Astro.props;
+
+const counts = new Map<string, number>();
+for (const tag of posts.flatMap((post) => post.data.tags)) {
+  counts.set(tag, (counts.get(tag) ?? 0) + 1);
+}
+const tags = [...counts].sort(([a], [b]) => a.localeCompare(b));
+const max = Math.max(1, ...counts.values());
+
+// Scale the font between 0.8rem and 1.15rem by how often a tag is used.
+const size = (count: number) => `${(0.8 + (0.35 * (count - 1)) / Math.max(1, max - 1)).toFixed(2)}rem`;
+---
+
+{tags.length > 0 && (
+  <aside aria-labelledby="tag-cloud-heading">
+    <h2 id="tag-cloud-heading" class="mb-4 text-lg font-semibold">Tags</h2>
+    <ul class="flex flex-wrap gap-2">
+      {tags.map(([tag, count]) => (
+        <li>
+          <a
+            href={`/tags/${tag}/`}
+            style={`font-size: ${size(count)}`}
+            aria-current={tag === current ? 'page' : undefined}
+            class="inline-block rounded-full bg-neutral-100 px-2.5 py-0.5 hover:bg-neutral-200 hover:text-accent aria-[current=page]:bg-accent aria-[current=page]:text-white dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:aria-[current=page]:bg-accent dark:aria-[current=page]:text-neutral-950"
+            title={`${count} post${count === 1 ? '' : 's'}`}
+          >
+            #{tag}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}

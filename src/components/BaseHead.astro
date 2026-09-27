@@ -1,0 +1,77 @@
+---
+import PostHog from './PostHog.astro';
+import { siteConfig } from '../site.config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  ogType?: 'article' | 'website' | 'profile';
+}
+
+const {
+  title = siteConfig.title,
+  description = siteConfig.description,
+  ogImage,
+  ogType = 'article',
+} = Astro.props;
+
+const pageTitle = title === siteConfig.title ? title : `${title} — ${siteConfig.title}`;
+const canonicalURL = new URL(Astro.url.pathname, siteConfig.url);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="alternate" type="application/rss+xml" title={siteConfig.title} href="/rss.xml" />
+
+<!-- Open Graph / Telegram preview -->
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+{ogImage && <meta property="og:image" content={new URL(ogImage, siteConfig.url)} />}
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap"
+/>
+
+<!-- Theme: 'auto' (follow OS), 'light' or 'dark'. Runs before paint to avoid a flash of the wrong theme. -->
+<script is:inline>
+  (() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const stored = () => {
+      try {
+        return localStorage.getItem('theme');
+      } catch {
+        return null;
+      }
+    };
+    const apply = (pref = stored() || 'auto') => {
+      const dark = pref === 'dark' || (pref === 'auto' && media.matches);
+      const root = document.documentElement;
+      root.classList.toggle('dark', dark);
+      root.dataset.theme = pref;
+      root.style.colorScheme = dark ? 'dark' : 'light';
+      window.dispatchEvent(new CustomEvent('themechange', { detail: { pref, dark } }));
+    };
+    window.setTheme = (pref) => {
+      try {
+        localStorage.setItem('theme', pref);
+      } catch {}
+      apply(pref);
+    };
+    media.addEventListener('change', () => apply());
+    apply();
+  })();
+</script>
+
+<title>{pageTitle}</title>
+<PostHog />

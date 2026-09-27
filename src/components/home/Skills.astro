@@ -1,0 +1,27 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { profile } from '../../data/profile';
+---
+
+<SectionHeading>Top skills</SectionHeading>
+<ul class="grid grid-cols-3 gap-2 md:gap-4">
+  {profile.skills.map((skill) => (
+    <li class="relative flex items-center justify-center rounded-full bg-gradient-to-r from-neutral-100 to-primary-light shadow-inner dark:from-primary-dark dark:to-neutral-800">
+      <svg class="m-2 w-full text-neutral-300 opacity-75 dark:text-neutral-600" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" fill-rule="evenodd" d="M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Zm-2 0a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" />
+        {[...Array(12)].map((_, i) => {
+          const a = (i / 12) * Math.PI * 2;
+          return <circle cx={12 + 5.6 * Math.cos(a)} cy={12 + 5.6 * Math.sin(a)} r="0.75" fill="currentColor" />;
+        })}
+        {[...Array(6)].map((_, i) => {
+          const a = (i / 6) * Math.PI * 2 + 0.5;
+          return <circle cx={12 + 2.8 * Math.cos(a)} cy={12 + 2.8 * Math.sin(a)} r="0.75" fill="currentColor" />;
+        })}
+        <circle cx="12" cy="12" r="0.75" fill="currentColor" />
+      </svg>
+      <span class="absolute rounded-md bg-gradient-to-r from-neutral-100 to-primary-light px-2 text-center text-xs whitespace-nowrap font-semibold text-primary-dark shadow-md lg:text-sm dark:from-primary-dark dark:to-neutral-800 dark:text-primary-light">
+        {skill}
+      </span>
+    </li>
+  ))}
+</ul>

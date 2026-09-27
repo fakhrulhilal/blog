@@ -1,0 +1,27 @@
+# --- Astro ---
+dist/
+.astro/
+
+# --- Bun / Node dependencies ---
+node_modules/
+bun-debug-*.log*
+*.tsbuildinfo
+
+# --- env ---
+.env
+.env.*
+!.env.example
+
+# --- Docker Compose: local Artalk backend data (real db/secrets once filled in) ---
+artalk-data/
+
+# --- Docker Compose: local dev CA (see deploy/ca/generate-cert.sh) ---
+# The root/intermediate CA itself lives outside this repo (~/.local-ca);
+# only the project-local leaf cert/key ever land here.
+deploy/ca/*.key
+deploy/ca/*.crt
+deploy/ca/*.pem
+deploy/ca/*.srl
+
+# --- misc ---
+.DS_Store

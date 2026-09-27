@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  /** Posts to list, newest first. */
+  posts: CollectionEntry<'posts'>[];
+}
+
+const { posts } = Astro.props;
+
+// Group by publishing year, keeping the incoming (newest-first) order within each year.
+const years = Map.groupBy(posts, (post) => post.data.date.getUTCFullYear());
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+
+<div class="space-y-10">
+  {[...years].map(([year, items]) => (
+    <section aria-labelledby={`year-${year}`}>
+      <h2 id={`year-${year}`} class="mb-4 text-lg font-semibold">{year}</h2>
+      <ul class="space-y-4">
+        {items.map((post) => (
+          <li class="grid gap-x-4 sm:grid-cols-[7rem_1fr]">
+            <time datetime={post.data.date.toISOString()} class="text-sm leading-7 text-neutral-500 tabular-nums">
+              {fmt(post.data.date)}
+            </time>
+            <div>
+              <a href={`/posts/${post.id}/`} class="font-medium leading-7 underline-offset-4 hover:text-accent hover:underline">
+                {post.data.title}
+              </a>
+              {post.data.description && (
+                <p class="mt-0.5 text-sm text-neutral-600 dark:text-neutral-400">{post.data.description}</p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</div>

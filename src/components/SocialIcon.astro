@@ -1,0 +1,33 @@
+---
+import type { SocialLink } from '../data/profile';
+import devto from '../icons/social/devto.svg';
+import email from '../icons/social/email.svg';
+import github from '../icons/social/github.svg';
+import linkedin from '../icons/social/linkedin.svg';
+import rss from '../icons/social/rss.svg';
+import strava from '../icons/social/strava.svg';
+import telegram from '../icons/social/telegram.svg';
+import wakatime from '../icons/social/wakatime.svg';
+
+interface Props {
+  name: SocialLink['name'];
+  class?: string;
+}
+
+// Keyed by SocialLink['name'] so adding a new network fails type-checking until its icon exists.
+const icons: Record<SocialLink['name'], typeof github> = {
+  devto,
+  email,
+  github,
+  linkedin,
+  rss,
+  strava,
+  telegram,
+  wakatime,
+};
+
+const { name, class: className } = Astro.props;
+const Icon = icons[name];
+---
+
+<Icon class={className} aria-hidden="true" />

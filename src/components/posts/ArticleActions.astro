@@ -1,0 +1,117 @@
+---
+// dev.to-style action rail for a post: reading progress, jump to comments, copy link.
+// Vertical and sticky beside the article from `md` up; a fixed bottom bar on small screens.
+
+interface Props {
+  /** Absolute URL copied by the link button. */
+  url: string;
+}
+
+const { url } = Astro.props;
+
+const button =
+  'group relative flex size-10 cursor-pointer items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-accent dark:text-neutral-400 dark:hover:bg-neutral-800';
+const tooltip =
+  'pointer-events-none absolute bottom-full mb-2 whitespace-nowrap rounded bg-neutral-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 md:bottom-auto md:left-full md:mb-0 md:ml-2 dark:bg-neutral-100 dark:text-neutral-900 data-copied:bg-accent data-copied:text-white dark:data-copied:text-neutral-950';
+---
+
+<aside
+  aria-label="Article actions"
+  class="fixed inset-x-0 bottom-0 z-10 border-t border-neutral-200 bg-white/90 backdrop-blur md:sticky md:top-24 md:inset-x-auto md:bottom-auto md:border-0 md:bg-transparent md:backdrop-blur-none print:hidden dark:border-neutral-800 dark:bg-neutral-950/90 md:dark:bg-transparent"
+>
+  <div class="flex items-center justify-center gap-6 py-2 md:flex-col md:gap-3 md:py-0">
+    <div
+      id="reading-progress"
+      role="progressbar"
+      aria-label="Reading progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      class="relative flex size-10 items-center justify-center"
+    >
+      <svg viewBox="0 0 36 36" class="absolute inset-0 -rotate-90" aria-hidden="true">
+        <circle cx="18" cy="18" r="16" fill="none" stroke-width="2.5" class="stroke-neutral-200 dark:stroke-neutral-800" />
+        <circle
+          id="reading-progress-ring"
+          cx="18"
+          cy="18"
+          r="16"
+          fill="none"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          pathLength="100"
+          stroke-dasharray="100"
+          stroke-dashoffset="100"
+          class="stroke-accent transition-[stroke-dashoffset] duration-150"
+        />
+      </svg>
+      <span id="reading-progress-label" class="text-[10px] font-medium tabular-nums text-neutral-600 data-done:text-accent dark:text-neutral-300">0%</span>
+    </div>
+
+    <a href="#comments" class={button} aria-label="Jump to comments">
+      <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12a8 8 0 0 1-11.6 7.15L4 20l.9-4.6A8 8 0 1 1 21 12Z" />
+      </svg>
+      <span class={tooltip}>Comments</span>
+    </a>
+
+    <button type="button" id="copy-article-link" data-url={url} class={button} aria-label="Copy link to article">
+      <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5" />
+        <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5" />
+      </svg>
+      <span class={tooltip} data-tooltip>Copy link</span>
+    </button>
+  </div>
+</aside>
+
+<script>
+  // Reading progress: how far the article has scrolled through the viewport (100% once its end is visible).
+  const article = document.querySelector<HTMLElement>('article');
+  const progress = document.getElementById('reading-progress');
+  const ring = document.getElementById('reading-progress-ring');
+  const label = document.getElementById('reading-progress-label');
+
+  if (article && progress && ring && label) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const { top, height } = article.getBoundingClientRect();
+      const scrollable = height - window.innerHeight;
+      const read = scrollable <= 0 ? 1 : Math.min(1, Math.max(0, -top / scrollable));
+      const percent = Math.round(read * 100);
+      ring.setAttribute('stroke-dashoffset', String(100 - percent));
+      label.textContent = `${percent}%`;
+      label.toggleAttribute('data-done', percent === 100);
+      progress.setAttribute('aria-valuenow', String(percent));
+    };
+    const schedule = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    update();
+  }
+
+  const copy = document.getElementById('copy-article-link');
+  const tip = copy?.querySelector<HTMLElement>('[data-tooltip]');
+  copy?.addEventListener('click', async () => {
+    if (!tip) return;
+    try {
+      await navigator.clipboard.writeText(copy.dataset.url ?? window.location.href);
+      tip.textContent = 'Link copied';
+      tip.dataset.copied = '';
+    } catch {
+      tip.textContent = 'Copy failed';
+    }
+    tip.style.opacity = '1';
+    setTimeout(() => {
+      tip.textContent = 'Copy link';
+      delete tip.dataset.copied;
+      tip.style.opacity = '';
+    }, 2000);
+  });
+</script>

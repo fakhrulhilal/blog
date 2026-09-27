@@ -1,0 +1,70 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Artalk from '../components/Artalk.astro';
+import ArticleActions from '../components/posts/ArticleActions.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  updated?: Date;
+  tags?: string[];
+}
+
+const { title, description, date, updated, tags = [] } = Astro.props;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout title={title} description={description} wide stickyHeader>
+  <div class="pb-16 md:grid md:grid-cols-[3rem_minmax(0,1fr)] md:gap-8 md:pb-0">
+    <div class="md:row-span-3">
+      <ArticleActions url={new URL(Astro.url.pathname, Astro.site).href} />
+    </div>
+
+    <article class="prose prose-sm prose-neutral dark:prose-invert prose-headings:font-semibold prose-a:text-accent prose-a:decoration-accent/40 hover:prose-a:decoration-accent prose-blockquote:border-accent prose-img:rounded-lg max-w-none">
+      <h1>{title}</h1>
+      <p class="text-sm text-neutral-500 -mt-4">
+        {fmt(date)}
+        {updated && <> · updated {fmt(updated)}</>}
+      </p>
+      <slot />
+    </article>
+
+    {tags.length > 0 && (
+      <div class="mt-8 flex flex-wrap gap-2 text-sm">
+        {tags.map((tag) => (
+          <a href={`/tags/${tag}/`} class="rounded-full bg-neutral-100 px-3 py-1 hover:bg-neutral-200 hover:text-accent dark:bg-neutral-800 dark:hover:bg-neutral-700">#{tag}</a>
+        ))}
+      </div>
+    )}
+
+    <section id="comments" aria-label="Comments" class="scroll-mt-20">
+      <hr class="my-10 border-neutral-200 dark:border-neutral-800" />
+      <Artalk />
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  // Copy buttons rendered by the code-block Shiki transformer (src/plugins/code-block.ts).
+  for (const button of document.querySelectorAll<HTMLButtonElement>('.code-copy')) {
+    const label = button.querySelector('.code-copy-label');
+    button.addEventListener('click', async () => {
+      const code = button.closest('.code-block')?.querySelector('pre code');
+      if (!code || !label) return;
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? '');
+        label.textContent = 'Copied';
+        button.classList.add('copied');
+      } catch {
+        label.textContent = 'Copy failed';
+      }
+      setTimeout(() => {
+        label.textContent = 'Copy';
+        button.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>

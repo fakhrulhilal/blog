@@ -1,0 +1,28 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { workHistory } from '../../data/profile';
+---
+
+<section class="mb-12">
+  <SectionHeading>
+    <span class="flex justify-center print:justify-start">Work history</span>
+  </SectionHeading>
+  <div class="relative flex flex-col py-6 before:absolute before:inset-y-0 before:left-1/2 before:block before:w-0.5 before:-translate-x-px before:bg-primary before:content-[''] print:before:hidden dark:before:bg-primary-light">
+    {workHistory.map(({ company, url, position, period }) => (
+      <div class="group relative w-1/2 py-4 odd:self-end odd:pl-12 even:self-start even:pr-12 even:text-right print:mb-2 print:self-start! print:border-l-4 print:border-primary-light print:pl-6! print:text-left!">
+        <span class="absolute top-1/2 inline-flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-neutral-100 to-primary-light group-first:from-primary group-first:to-primary group-odd:left-0 group-odd:-translate-x-1/2 group-even:right-0 group-even:translate-x-1/2 print:hidden dark:from-primary-dark dark:to-neutral-800">
+          <span class="h-5 w-5 rounded-full bg-primary-light group-first:bg-green-500 group-first:shadow-inner dark:bg-primary-dark"></span>
+        </span>
+        <h4 class="text-primary-dark dark:text-primary-light">
+          {url ? (
+            <a href={url} target="_blank" rel="noopener noreferrer" class="transition-opacity duration-150 hover:opacity-75">
+              {company}
+            </a>
+          ) : company}
+        </h4>
+        <h5 class="mb-1 text-sm text-neutral-800 dark:text-neutral-300">{position}</h5>
+        <span class="text-sm font-medium text-neutral-700 opacity-50 dark:text-neutral-300">{period}</span>
+      </div>
+    ))}
+  </div>
+</section>

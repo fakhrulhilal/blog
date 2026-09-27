@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SectionHeading from './SectionHeading.astro';
+
+interface Props {
+  posts: CollectionEntry<'posts'>[];
+}
+
+const { posts } = Astro.props;
+---
+
+<section class="mb-12 print:hidden">
+  <div class="flex items-baseline justify-between">
+    <SectionHeading>Latest writing</SectionHeading>
+    <a href="/posts/" class="text-xs uppercase text-neutral-500 hover:underline dark:text-neutral-400">All posts →</a>
+  </div>
+  <ul class="flex flex-col gap-4">
+    {posts.map((post) => (
+      <li>
+        <a href={`/posts/${post.id}/`} class="group block">
+          <h4 class="font-semibold text-primary-dark group-hover:underline dark:text-primary-light">{post.data.title}</h4>
+          {post.data.description && (
+            <p class="text-sm text-neutral-700 dark:text-neutral-300">{post.data.description}</p>
+          )}
+          <span class="text-xs font-medium text-neutral-500">
+            {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  {posts.length === 0 && <p class="text-sm text-neutral-500">No posts yet.</p>}
+</section>

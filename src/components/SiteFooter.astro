@@ -1,0 +1,29 @@
+---
+import { contact, profile } from '../data/profile';
+
+interface Props {
+  /** Theme credit shown on pages whose design is borrowed from another project. */
+  credit?: { name: string; url: string };
+}
+
+const { credit } = Astro.props;
+---
+
+<footer class="mx-auto w-full max-w-4xl px-4 font-code print:hidden">
+  <div class="flex flex-wrap items-center gap-2 border-t border-neutral-200 py-6 text-xs text-neutral-500 dark:border-neutral-800">
+    <p>
+      <b>&copy; {new Date().getFullYear()} {profile.name}.</b> All rights reserved.
+      {credit && (
+        <>
+          <br />
+          Design inspired by{' '}
+          <a href={credit.url} target="_blank" rel="noopener noreferrer" class="underline hover:opacity-75">{credit.name}</a>.
+        </>
+      )}
+    </p>
+    <p class="ml-auto flex gap-4">
+      <a href={contact.url} target="_blank" rel="noopener noreferrer" class="hover:underline">{contact.handle}</a>
+      <a href="/rss.xml" class="hover:underline">RSS</a>
+    </p>
+  </div>
+</footer>
