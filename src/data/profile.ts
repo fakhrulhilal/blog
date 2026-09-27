@@ -31,10 +31,10 @@ export const profile = {
   initials: 'FM',
   profession: 'Web Developer Specialist',
   image: 'https://github.com/fakhrulhilal.png',
-  location: 'Indonesia',
+  location: 'Jakarta, Indonesia',
   forHire: true,
   focus: 'Web APIs & developer tooling',
-  stack: '.NET/C#, Azure DevOps',
+  stack: '.NET/C#, Bun/TS, Azure DevOps, Jira/Confluence',
 
   about: `A web developer specialising in the .NET stack. I like small, sharp tools: most of my day-to-day
 automation lives in my dotfiles as C# file-based apps compiled with Native AOT, PowerShell modules and Bun
@@ -113,6 +113,16 @@ export const projects: Project[] = [
         '',
     status: 'Archived',
     tags: ['.NET', 'design-pattern', 'template', 'architecture']
+  },
+  {
+    name: 'TFSGitDownloader',
+    url: 'https://github.com/fakhrulhilal/TFSGitDownloader',
+    image: '/images/projects/tfs-git-downloader.png',
+    description: 'My first Azure DevOps plugin which initially doesn\'t support cloning multiple repositories on build pipeline. ' +
+        'Written in PowerShell script. ' +
+        'It\'s been archived since the first day Azure DevOps add support resolving this issue. ',
+    status: 'Archived',
+    tags: ['Azure DevOps', 'PowerShell']
   }
 ];
 
