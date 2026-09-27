@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Square take on the header initials badge (SiteHeader.astro); text is the dark-mode accent, oklch(70.91% 0.1415 163.7) -->
+  <rect x="1" y="1" width="30" height="30" rx="6" fill="#000" stroke="#fff" stroke-width="2"/>
+  <text x="16" y="20.6" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#2abc89" text-anchor="middle">FM</text>
+</svg>

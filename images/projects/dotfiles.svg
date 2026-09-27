@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+<defs>
+<linearGradient id="term" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl(228 28% 20%)"/><stop offset="1" stop-color="hsl(230 32% 9%)"/></linearGradient>
+<radialGradient id="glass" cx="0.3" cy="0.1" r="0.9"><stop offset="0" stop-color="#ffffff" stop-opacity="0.10"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+</defs>
+
+<rect x="0" y="0" width="128" height="128" fill="url(#term)"/>
+<rect x="0" y="0" width="128" height="20" fill="hsl(230 36% 13%)"/>
+<circle cx="15" cy="10" r="4" fill="hsl(4 78% 60%)"/>
+<circle cx="29" cy="10" r="4" fill="hsl(45 88% 60%)"/>
+<circle cx="43" cy="10" r="4" fill="hsl(140 55% 52%)"/>
+
+<text x="13" y="78" font-family="Consolas, Menlo, 'Courier New', monospace" font-size="13">
+  <tspan fill="hsl(140 65% 68%)">&gt;</tspan><tspan fill="hsl(0 0% 92%)"> ~/</tspan><tspan fill="hsl(178 85% 72%)">.</tspan><tspan fill="hsl(0 0% 92%)">dotfiles</tspan>
+</text>
+<rect x="119" y="67" width="8" height="15" fill="hsl(178 85% 72% / 0.9)"/>
+
+<rect x="0" y="0" width="128" height="128" fill="url(#glass)"/>
+</svg>
